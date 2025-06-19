@@ -10,4 +10,10 @@
 
 #define SIZE_W 600
 
+typedef struct {
+    float x;
+    float y;
+    float z;
+} Point;
+
 #endif
