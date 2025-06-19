@@ -15,4 +15,8 @@ $(EXEC): $(OBJ)
 	$(CC) -c $< -o $@ $(SDL2_INCLUDE)
 
 clean:
-	del *.o *.exe 2>nul || rm -f *.o *.exe
+ifeq ($(OS),Windows_NT)
+	del /Q *.o *.exe 2>nul
+else
+	rm -f *.o *.exe
+endif

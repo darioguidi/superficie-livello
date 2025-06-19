@@ -8,6 +8,6 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 
-#define SIZE_W 800
+#define SIZE_W 600
 
 #endif
