@@ -3,23 +3,34 @@
 
 #define SDL_MAIN_HANDLED
 
+// Libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <SDL2/SDL.h>
 
+// Constant
 #define SIZE_W 600
+#define SIZE_POINT 3
+#define SIZE_GRID 250
+#define OFFSET_X SIZE_W/2
+#define OFFSET_Y -SIZE_W/2
+#define DISTANCE 100
+#define MAX_POINTS SIZE_GRID*SIZE_GRID
 
+// Struct
 typedef struct {
     float x;
     float y;
     float z;
-    Point *nextPoint;
 } Point;
 
-void addNoe(Point *point);
-void deleteNode(Point *point);
-void readFileCSV();
+// Function
+void createFileCSV();
+void readFileCSV(Point *sup);
+void printPoint(SDL_Renderer *renderer, Point point);
+void printPoints(SDL_Renderer *renderer, Point *sup);
+
 
 #endif
