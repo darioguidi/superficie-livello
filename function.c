@@ -1,14 +1,20 @@
 #include "function.h"
 
+// GESTIONE SUPERIFICIE CURVICA
+// Funzione per generare i punti della superifcie in un file CSV
 void createFileCSV()
 {
     FILE *file = fopen("data.csv", "w");
     if (file == NULL) {
         printf("Errore nell'apertura del file.\n");
+        return;
     }
 
-    for (int y = 0; y < SIZE_GRID; y++) {
-        for (int x = 0; x < SIZE_GRID; x++) {
+    int half_grid = SIZE_GRID / 2;
+
+    // Possiamo variare la densità dei punti, modificando l'aumento stesso della variabile
+    for (int y = -half_grid; y < half_grid; y+=5) {
+        for (int x = -half_grid; x < half_grid; x+=5) {
             // Calcolo z come funzione di x e y
             double z = 100 * sin(0.05 * x) * cos(0.05 * y);
             fprintf(file, "%d,%d,%.2f\n", x, y, z);
@@ -43,7 +49,7 @@ void readFileCSV(Point *sup)
         // Creazione di un Point
         char *token = strtok(buffer, ",");
         point.x = atof(token);
-        point.y = SIZE_W - atof(strtok(NULL, ","));
+        point.y = atof(strtok(NULL, ","));
         point.z = atof(strtok(NULL, ","));
 
         // Aggiunta del punto in memoria - array
@@ -55,28 +61,41 @@ void readFileCSV(Point *sup)
     fclose(file);
 }
 
-void printPoint(SDL_Renderer *renderer, Point point)
+void printPoint(SDL_Renderer *renderer, Point point, float theta, float phi)
 {
-
     if (point.z + DISTANCE <= 0) return;
 
-    // Trasformazioni 
-    int x = point.x*(DISTANCE/(point.z+DISTANCE))+OFFSET_X;
-    int y = point.y*(DISTANCE/(point.z+DISTANCE))+OFFSET_Y;
+    // Applichiamo rotazione Y (theta)
+    float rad_theta = theta * PI / 180.0;
+    float rad_phi = phi * PI / 180.0;
 
-    // Crea un rettangolo in posizione (x.y) con dimensioni definite dalla costante SIZE_POINT
-    SDL_Rect rect = {x, y, SIZE_POINT, SIZE_POINT};
-    // Colore del rettangolo
-    SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-    // Disegna il rettangolo
+    float x1 = point.x * cos(rad_theta) - point.z * sin(rad_theta);
+    float z1 = point.x * sin(rad_theta) + point.z * cos(rad_theta);
+
+    // Applichiamo rotazione X (phi)
+    float y1 = point.y * cos(rad_phi) - z1 * sin(rad_phi);
+    float z2 = point.y * sin(rad_phi) + z1 * cos(rad_phi);
+
+    if (z2 + DISTANCE <= 0) return;
+
+    // Proiezione prospettica
+    int xp = x1 * (DISTANCE / (z2 + DISTANCE)) + OFFSET_X;
+    int yp = y1 * (DISTANCE / (z2 + DISTANCE)) + OFFSET_Y;
+
+    SDL_Rect rect = {xp, yp, SIZE_POINT, SIZE_POINT};
+
+    if(yp<100){
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    }else{
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    }
     SDL_RenderFillRect(renderer, &rect);
 }
 
-
-void printPointsSuperficie(SDL_Renderer *renderer, Point *sup)
+void printPointsSuperficie(SDL_Renderer *renderer, Point *sup, float theta, float phi)
 {
     for (int i=0; i < MAX_POINTS; i++){
-        printPoint(renderer, sup[i]);
+        printPoint(renderer, sup[i], theta, phi);
     }
 }
 
@@ -90,35 +109,45 @@ void generatePlane(Point *plane)
 
     for (int z = -half_grid; z < half_grid; z++) {
         for (int x = -half_grid; x < half_grid; x++) {
-            plane[index] = (Point){x, 0, z};
+            plane[index] = (Point){x, half_grid+50, z};
             index++;
         }
     }
 }
 
 // Funzione per la stampa dei punti del piano
-void printPointsPiano(SDL_Renderer *renderer, Point *plane)
+void printPointsPiano(SDL_Renderer *renderer, Point *plane, float theta, float phi)
 {
     for (int i=0; i < MAX_POINTS; i++){
-        printPointPlane(renderer, plane[i]);
+        printPointPlane(renderer, plane[i], theta, phi);
     }  
 }
 
 // Stampa singolo punto del piano
-void printPointPlane(SDL_Renderer *renderer, Point point)
+void printPointPlane(SDL_Renderer *renderer, Point point, float theta, float phi)
 {
-    if (point.z + DISTANCE <= 0) return;
+    // Converti gli angoli in radianti
+    float rad_theta = theta * PI / 180.0f;
+    float rad_phi = phi * PI / 180.0f;
 
-    // Trasformazioni 
-    int x = point.x*(DISTANCE/(point.z+DISTANCE))+OFFSET_X;
-    int y = point.y*(DISTANCE/(point.z+DISTANCE))+OFFSET_Y;
+    // Rotazione attorno all'asse Y (theta)
+    float x1 = point.x * cos(rad_theta) - point.z * sin(rad_theta);
+    float z1 = point.x * sin(rad_theta) + point.z * cos(rad_theta);
 
-    // Crea un rettangolo in posizione (x.y) con dimensioni definite dalla costante SIZE_POINT
-    SDL_Rect rect = {x, y, SIZE_POINT, SIZE_POINT};
-    // Colore del rettangolo
+    // Rotazione attorno all'asse X (phi)
+    float y1 = point.y * cos(rad_phi) - z1 * sin(rad_phi);
+    float z2 = point.y * sin(rad_phi) + z1 * cos(rad_phi);
+
+    if (z2 + DISTANCE <= 0) return;
+
+    // Proiezione prospettica
+    int xp = x1 * (DISTANCE / (z2 + DISTANCE)) + OFFSET_X;
+    int yp = y1 * (DISTANCE / (z2 + DISTANCE)) + OFFSET_Y;
+
+    SDL_Rect rect = {xp, yp, SIZE_POINT, SIZE_POINT};
     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-    // Disegna il rettangolo
     SDL_RenderFillRect(renderer, &rect);
 }
+
 
 

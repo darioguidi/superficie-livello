@@ -1,5 +1,8 @@
 #include "function.h"
 
+float theta = 0.0f;
+float phi = 0.0f;
+
 int main(int argc, char *argv[])
 {
     // Inizializzazione del SDL
@@ -38,7 +41,7 @@ int main(int argc, char *argv[])
     }
 
     // Creazione dei dati nel file CSV
-    // createFileCSV();
+    createFileCSV();
 
     // Alloco lo spazio necessario per poter rappresentare i punti della superficie di livello 400x400
     int number_points = MAX_POINTS;
@@ -63,6 +66,23 @@ int main(int argc, char *argv[])
                 printf("Chiusura del programma \n");
                 running = 0;
             }
+
+            // Gestione degli eventi per angoli theta e phi da tastiera
+            if (event.type == SDL_KEYDOWN) {
+                SDL_Keycode key = event.key.keysym.sym;
+                if (key == SDLK_RIGHT) {
+                    theta+=2.5;
+                }
+                if (key == SDLK_LEFT) {
+                    theta-=2.5;
+                }
+                if (key == SDLK_UP) {
+                    phi+=2.5;
+                }
+                if (key == SDLK_DOWN) {
+                    phi-=2.5;
+                }
+            }
         }
 
         // Impostato il colore di sfondo
@@ -72,10 +92,10 @@ int main(int argc, char *argv[])
         SDL_RenderClear(renderer);
 
         // Stampa punti della superficie a livello
-        // printPointsSuperficie(renderer, sup);
+        printPointsSuperficie(renderer, sup, theta, phi);
 
         // Stampa dei punti del piano sottostante
-        printPointsPiano(renderer, plane);
+        printPointsPiano(renderer, plane, theta, phi);
 
         // Presente il BUFFER aggiornato con il nuovo frame
         SDL_RenderPresent(renderer);
