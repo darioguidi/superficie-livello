@@ -13,10 +13,10 @@ void createFileCSV()
     int half_grid = SIZE_GRID / 2;
 
     // Possiamo variare la densità dei punti, modificando l'aumento stesso della variabile
-    for (int y = -half_grid; y < half_grid; y+=5) {
-        for (int x = -half_grid; x < half_grid; x+=5) {
+    for (int x = -half_grid; x < half_grid; x+=5) {
+         for (int y = -half_grid; y < half_grid; y+=5){
             // Calcolo z come funzione di x e y
-            double z = 100 * sin(0.05 * x) * cos(0.05 * y);
+            double z = 100 * sin(0.05 * y) * cos(0.05 * x);
             fprintf(file, "%d,%d,%.2f\n", x, y, z);
         }
     }
@@ -48,9 +48,16 @@ void readFileCSV(Point *sup)
 
         // Creazione di un Point
         char *token = strtok(buffer, ",");
+        if (token == NULL) break;
         point.x = atof(token);
-        point.y = atof(strtok(NULL, ","));
-        point.z = atof(strtok(NULL, ","));
+
+        token = strtok(NULL, ",");
+        if (token == NULL) break;
+        point.y = atof(token);
+
+        token = strtok(NULL, ",");
+        if (token == NULL) break;
+        point.z = atof(token);
 
         // Aggiunta del punto in memoria - array
         sup[i]=point;
@@ -82,9 +89,11 @@ void printPoint(SDL_Renderer *renderer, Point point, float theta, float phi)
     int xp = x1 * (DISTANCE / (z2 + DISTANCE)) + OFFSET_X;
     int yp = y1 * (DISTANCE / (z2 + DISTANCE)) + OFFSET_Y;
 
+    yp = SIZE_W - yp;
+
     SDL_Rect rect = {xp, yp, SIZE_POINT, SIZE_POINT};
 
-    if(yp<100){
+    if(z2<20){
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     }else{
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

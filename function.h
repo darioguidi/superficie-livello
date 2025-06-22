@@ -17,7 +17,7 @@
 #define SIZE_GRID 250
 #define OFFSET_X (SIZE_W / 2)
 #define OFFSET_Y (SIZE_W / 2)
-#define DISTANCE 750
+#define DISTANCE 700
 #define MAX_POINTS (SIZE_GRID * SIZE_GRID)
 
 // Struct
