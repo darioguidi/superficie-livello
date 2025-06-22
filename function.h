@@ -14,10 +14,10 @@
 #define SIZE_W 600
 #define SIZE_POINT 3
 #define SIZE_GRID 250
-#define OFFSET_X SIZE_W/2
-#define OFFSET_Y -SIZE_W/2
-#define DISTANCE 100
-#define MAX_POINTS SIZE_GRID*SIZE_GRID
+#define OFFSET_X (SIZE_W / 2)
+#define OFFSET_Y (SIZE_W / 2)
+#define DISTANCE 500
+#define MAX_POINTS (SIZE_GRID * SIZE_GRID)
 
 // Struct
 typedef struct {
@@ -29,8 +29,12 @@ typedef struct {
 // Function
 void createFileCSV();
 void readFileCSV(Point *sup);
-void printPoint(SDL_Renderer *renderer, Point point);
-void printPoints(SDL_Renderer *renderer, Point *sup);
+void generatePlane(Point *plane);
 
+void printPoint(SDL_Renderer *renderer, Point point);
+void printPointPlane(SDL_Renderer *renderer, Point point);
+
+void printPointsSuperficie(SDL_Renderer *renderer, Point *sup);
+void printPointsPiano(SDL_Renderer *renderer, Point *plane);
 
 #endif

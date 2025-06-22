@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
 
     // Leggo / Riempio l'array con i dati necessari per descrivere i punti
     readFileCSV(sup);
+    generatePlane(plane);
 
     // Creazione di un evento in ambiente SDL
     SDL_Event event;
@@ -70,6 +71,12 @@ int main(int argc, char *argv[])
         // Comando utile ad pulire il BUFFER dal frame passato 
         SDL_RenderClear(renderer);
 
+        // Stampa punti della superficie a livello
+        // printPointsSuperficie(renderer, sup);
+
+        // Stampa dei punti del piano sottostante
+        printPointsPiano(renderer, plane);
+
         // Presente il BUFFER aggiornato con il nuovo frame
         SDL_RenderPresent(renderer);
     }
@@ -81,5 +88,6 @@ int main(int argc, char *argv[])
 
     // Deallocamento memoria array
     free(sup);
+    free(plane);
     return 0;
 }

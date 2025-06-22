@@ -43,7 +43,7 @@ void readFileCSV(Point *sup)
         // Creazione di un Point
         char *token = strtok(buffer, ",");
         point.x = atof(token);
-        point.y = atof(strtok(NULL, ","));
+        point.y = SIZE_W - atof(strtok(NULL, ","));
         point.z = atof(strtok(NULL, ","));
 
         // Aggiunta del punto in memoria - array
@@ -57,6 +57,9 @@ void readFileCSV(Point *sup)
 
 void printPoint(SDL_Renderer *renderer, Point point)
 {
+
+    if (point.z + DISTANCE <= 0) return;
+
     // Trasformazioni 
     int x = point.x*(DISTANCE/(point.z+DISTANCE))+OFFSET_X;
     int y = point.y*(DISTANCE/(point.z+DISTANCE))+OFFSET_Y;
@@ -69,32 +72,53 @@ void printPoint(SDL_Renderer *renderer, Point point)
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void printPointPlane(SDL_Renderer *renderer, Point point)
-{
-    // Trasformazioni 
-    int x = point.x*(DISTANCE/(point.z+DISTANCE))+OFFSET_X;
-    int y = point.y*(DISTANCE/(point.z+DISTANCE))+OFFSET_Y;
 
-    // Crea un rettangolo in posizione (x.y) con dimensioni definite dalla costante SIZE_POINT
-    SDL_Rect rect = {x, y, SIZE_POINT, SIZE_POINT};
-    // Colore del rettangolo
-    SDL_SetRenderDrawColor(renderer, 255,255,255,255);
-    // Disegna il rettangolo
-    SDL_RenderFillRect(renderer, &rect);
-}
-
-void printPoints(SDL_Renderer *renderer, Point *sup)
+void printPointsSuperficie(SDL_Renderer *renderer, Point *sup)
 {
     for (int i=0; i < MAX_POINTS; i++){
         printPoint(renderer, sup[i]);
     }
 }
 
+
+// GESTIONE PIANO 2D
+// Funzione per generare i punti del piano
 void generatePlane(Point *plane)
 {
-    for (int i=0; i<MAX_POINTS; i++){
-        for (int j=0; j<MAX_POINTS; j++){
-            plane[i] = (Point){i,0,j};
+    int half_grid = SIZE_GRID / 2;
+    int index = 0;
+
+    for (int z = -half_grid; z < half_grid; z++) {
+        for (int x = -half_grid; x < half_grid; x++) {
+            plane[index] = (Point){x, 0, z};
+            index++;
         }
     }
 }
+
+// Funzione per la stampa dei punti del piano
+void printPointsPiano(SDL_Renderer *renderer, Point *plane)
+{
+    for (int i=0; i < MAX_POINTS; i++){
+        printPointPlane(renderer, plane[i]);
+    }  
+}
+
+// Stampa singolo punto del piano
+void printPointPlane(SDL_Renderer *renderer, Point point)
+{
+    if (point.z + DISTANCE <= 0) return;
+
+    // Trasformazioni 
+    int x = point.x*(DISTANCE/(point.z+DISTANCE))+OFFSET_X;
+    int y = point.y*(DISTANCE/(point.z+DISTANCE))+OFFSET_Y;
+
+    // Crea un rettangolo in posizione (x.y) con dimensioni definite dalla costante SIZE_POINT
+    SDL_Rect rect = {x, y, SIZE_POINT, SIZE_POINT};
+    // Colore del rettangolo
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    // Disegna il rettangolo
+    SDL_RenderFillRect(renderer, &rect);
+}
+
+
