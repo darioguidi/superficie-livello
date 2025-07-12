@@ -1,7 +1,8 @@
 #include "function.h"
 
 // GESTIONE SUPERIFICIE CURVICA
-// Funzione per generare i punti della superifcie in un file CSV
+
+// Funzione per generare i punti della superifcie in un file CSV rinominato data.csv
 void createFileCSV()
 {
     FILE *file = fopen("data.csv", "w");
@@ -12,19 +13,24 @@ void createFileCSV()
 
     int half_grid = SIZE_GRID / 2;
 
-    // Possiamo variare la densità dei punti, modificando l'aumento stesso della variabile
-    for (int x = -half_grid; x < half_grid; x+=5) {
-         for (int y = -half_grid; y < half_grid; y+=5){
-            // Calcolo z come funzione di x e y
+    double theta = PI / 2.0; // 30 gradi, puoi cambiare
+
+    for (int x = -half_grid; x < half_grid; x += 5) {
+        for (int y = -half_grid; y < half_grid; y += 5) {
             double z = 100 * sin(0.05 * y) * cos(0.05 * x);
-            fprintf(file, "%d,%d,%.2f\n", x, y, z);
+
+            // Rotazione attorno all'asse X
+            double y_rot = y * cos(theta) - z * sin(theta);
+            double z_rot = y * sin(theta) + z * cos(theta);
+
+            // Scrivi il punto ruotato
+            fprintf(file, "%d,%.2f,%.2f\n", x, y_rot, z_rot);
         }
     }
 
     fclose(file);
     printf("File data.csv generato con successo!\n");
 }
-
 void readFileCSV(Point *sup)
 {
     // Puntatore al file
@@ -93,7 +99,7 @@ void printPoint(SDL_Renderer *renderer, Point point, float theta, float phi)
 
     SDL_Rect rect = {xp, yp, SIZE_POINT, SIZE_POINT};
 
-    if(z2<20){
+    if(y1>385){
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     }else{
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

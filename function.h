@@ -19,6 +19,7 @@
 #define OFFSET_Y (SIZE_W / 2)
 #define DISTANCE 700
 #define MAX_POINTS (SIZE_GRID * SIZE_GRID)
+#define PI 3.14
 
 // Struct
 typedef struct {
